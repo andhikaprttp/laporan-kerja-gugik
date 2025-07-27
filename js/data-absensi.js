@@ -31,6 +31,6 @@ const absensiData = {
 
 
 
-    // Add more attendance data as needed
+    
   ]
 };
