@@ -1,4 +1,4 @@
-// Dark mode toggle & simpan preferensi & update icon
+// Dark mode
 function setDarkMode(enabled) {
   if (enabled) {
     document.documentElement.classList.add('dark');
@@ -27,7 +27,7 @@ function updateDarkModeIcon(isDark) {
   }
 }
 
-// Format date helper
+// Format tanggal
 function formatDate(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -35,7 +35,6 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Fungsi untuk mengecek apakah suatu tanggal adalah hari ini
 function isToday(dateToCheck) {
   const today = new Date();
   return today.getFullYear() === dateToCheck.getFullYear() &&
@@ -49,12 +48,10 @@ function getMonthName(date) {
   return monthNames[date.getMonth()];
 }
 
-// Calendar variables
 let currentDate = new Date();
 let laporanDate = new Date();
 let absensiDate = new Date();
 
-// ===== Calendar Functions =====
 function renderCalendar() {
   const calendar = document.getElementById("calendar");
   const monthYear = document.getElementById("monthYear");
@@ -68,12 +65,10 @@ function renderCalendar() {
   monthYear.textContent = `${getMonthName(currentDate)} ${year}`;
   calendar.innerHTML = "";
 
-  // Header hari
   weekdays.forEach(day => {
     calendar.innerHTML += `<div class='font-semibold text-center text-gray-700 dark:text-gray-300 select-none'>${day}</div>`;
   });
 
-  // Blank cells sebelum tanggal 1
   for(let i=0; i<offset; i++){
     calendar.innerHTML += `<div></div>`;
   }
@@ -85,8 +80,7 @@ function renderCalendar() {
     const dayTasks = tasks[key] || [];
     const isSunday = day.getDay() === 0;
     const today = isToday(day);
-
-    // Batasi tampilkan maksimal 6 tugas di kalender, sisanya +n tugas
+    // batasi 
     const maxVisibleTasks = 4;
     const visibleTasks = dayTasks.slice(0, maxVisibleTasks);
     const remainingCount = dayTasks.length - maxVisibleTasks;
@@ -141,7 +135,6 @@ function renderCalendarLaporan() {
     calendar.innerHTML += `<div class='font-semibold text-center text-gray-700 dark:text-gray-300 select-none'>${day}</div>`;
   });
 
-  // Blank cells sebelum tanggal 1
   for(let i=0; i<offset; i++){
     calendar.innerHTML += `<div></div>`;
   }
@@ -186,7 +179,6 @@ function renderCalendarLaporan() {
     `;
   }
   
-  // Update statistics
   updateLaporanStatistics();
 }
 
@@ -230,7 +222,7 @@ function updateLaporanStatistics() {
 function changeMonth(direction){
   currentDate.setMonth(currentDate.getMonth()+direction);
   renderCalendar();
-  renderTaskTable(); // Update task table when month changes
+  renderTaskTable(); 
 }
 
 function changeLaporanMonth(direction){
@@ -238,17 +230,14 @@ function changeLaporanMonth(direction){
   renderCalendarLaporan();
 }
 
-// ===== Task Table Functions =====
 function renderTaskTable() {
   const tableBody = document.getElementById("taskTableBody");
   tableBody.innerHTML = "";
   
-  // Get current month dates
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const lastDay = new Date(year, month + 1, 0).getDate();
   
-  // Create array of all dates in month with tasks
   const monthTasks = [];
   for(let day = 1; day <= lastDay; day++) {
     const date = new Date(year, month, day);
@@ -261,10 +250,8 @@ function renderTaskTable() {
     }
   }
   
-  // Sort by date (newest first)
   monthTasks.sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  // Populate table
   monthTasks.forEach(day => {
     const row = document.createElement("tr");
     row.className = "border-t border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors";
@@ -295,7 +282,6 @@ function renderTaskTable() {
     tableBody.appendChild(row);
   });
   
-  // Show message if no tasks
   if(monthTasks.length === 0) {
     const row = document.createElement("tr");
     row.className = "border-t border-gray-200 dark:border-slate-700";
@@ -308,7 +294,6 @@ function renderTaskTable() {
   }
 }
 
-// ===== Popup Functions =====
 function showPopup(date){
   const popup = document.getElementById("taskPopup");
   const taskList = document.getElementById("popupTaskList");
@@ -326,15 +311,14 @@ function showPopup(date){
   });
 
   popup.classList.remove("hidden");
-  document.body.style.overflow = 'hidden'; // disable scroll background
+  document.body.style.overflow = 'hidden'; 
 }
 
 function closePopup(){
   document.getElementById("taskPopup").classList.add("hidden");
-  document.body.style.overflow = ''; // enable scroll background
+  document.body.style.overflow = ''; 
 }
 
-// ===== Chart Functions =====
 function renderChart(){
   const ctx = document.getElementById('chartKinerja').getContext('2d');
   if(window.chartInstance) window.chartInstance.destroy();
@@ -366,7 +350,6 @@ function renderChart(){
     }
   });
   
-  // Line chart for performance trend
 
   // grafik performa
   const trendCtx = document.getElementById('trendChart').getContext('2d');
@@ -533,13 +516,12 @@ function renderAbsensi(){
   });
   document.getElementById("absensiMonthYear").textContent = formatAbsensiMonthYear(absensiDate);
   
- // Calculate statistics
 let totalDays = data.length;
 let onTimeDays = data.filter(d => {
-  // Split time string into hours and minutes
+  
   const [hours, minutes] = d.masuk.split(':').map(Number);
   
-  // Check if time is before or equal to 08:10
+  // kalau lebih dari jam 08:10 telat
   return (hours < 8) || (hours === 8 && minutes <= 10);
 }).length;
 let lateDays = totalDays - onTimeDays;
